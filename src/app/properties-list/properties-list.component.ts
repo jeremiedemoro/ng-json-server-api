@@ -57,10 +57,13 @@ export class PropertiesListComponent implements OnInit {
       this.isSearchingData = false;
     } else {
       this.isSearchingData = true;
+
+      // this.selectedStatus = this.properties.filter((selectedTenant) => selectedTenant.tenant == selectedValue);
+
       this.selectedStatus = this.properties.filter((element) => {
-        console.log(element)
         if (element.tenant != null && element.tenant.lastName != null) {
-          element.tenant.tenantStatus = selectedValue
+          element.tenant.tenantStatus == selectedValue
+          console.log(element.tenant.tenantStatus)
         }
       })
     }
