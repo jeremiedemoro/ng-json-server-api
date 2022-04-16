@@ -1,0 +1,119 @@
+<main class="container properties-list-container">
+    <h1 class="title-section">Table using JSON Server API</h1>
+    <app-loader *ngIf="!isDataLoaded"></app-loader>
+    <!-- Filter -->
+    <section *ngIf="isDataLoaded" class="filter custom-select">
+        <div class="material-select">
+            <select class="capitalize select-text" [(ngModel)]="propertySelected"
+                (ngModelChange)="searchPropertyStatus(propertySelected)" required>
+                <option [value]="status" *ngFor="let status of propertyStatusFilter; let i = index;">
+                    {{status}}
+                </option>
+            </select>
+            <span class="select-highlight"></span>
+            <span class="select-bar"></span>
+        </div>
+
+        <div class="material-select">
+            <select class="capitalize select-text" [(ngModel)]="tenantSelected"
+                (ngModelChange)="searchTenantStatus(tenantSelected)" required>
+                <option [value]="status" *ngFor="let status of tenantStatusFilter; let i = index;">
+                    {{status}}
+                </option>
+            </select>
+            <span class="select-highlight"></span>
+            <span class="select-bar"></span>
+        </div>
+    </section>
+
+    <!-- Table & Filtered Result -->
+    <section *ngIf="isSearchingData" class="table-responsive search-data-table">
+        <table class="table table-hover responsive">
+            <thead>
+                <tr>
+                    <th scope="col" *ngFor="let col of columns">
+                        {{col}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let status of selectedStatus | paginate: { itemsPerPage: 15, currentPage: p }; let i = index">
+                    <td>{{status.createdOn | date: 'dd/MM/yyyy'}}</td>
+                    <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        (click)="callDialog(status.address, status.occupiedStats)"
+                        title="status.address">
+                        {{status.address}}
+                    </td>
+                    <td class="upper-case" [ngClass]="{'active': status.occupiedStats === 'active',
+                                    'occupied': status.occupiedStats === 'occupied',
+                                    'vacant': status.occupiedStats === 'vacant', 
+                                    'inactive': status.occupiedStats === 'inactive'}">
+                        {{status.occupiedStats}}
+                    </td>
+                    <td class="capitalize">{{status.plan}}</td>
+                    <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        (click)="callDialog(status.owner, status.ownerStatus)">
+                        {{status.owner}}
+                    </td>
+                    <td class="upper-case">{{status.ownerStatus}}</td>
+                    <ng-container *ngIf="status.tenant">
+                        <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                            (click)="callDialog(status.tenant.firstName, status.tenant.tenantStatus)">
+                            {{status.tenant.firstName}} {{status.tenant.lastName}}
+                        </td>
+                        <td class="upper-case">{{status.tenant.tenantStatus}}</td>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Table -->
+    <section *ngIf="!isSearchingData" class="table-responsive">
+        <table class="table table-hover responsive">
+            <thead>
+                <th scope="col" *ngFor="let col of columns">
+                    {{col}}
+                </th>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let property of properties | paginate: { itemsPerPage: 15, currentPage: p }; let i = index;">
+                    <td>{{property.createdOn | date: 'dd/MM/yyyy'}}</td>
+                    <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        (click)="callDialog(property.address,property.occupiedStats)">
+                        {{property.address}}
+                    </td>
+                    <td class="upper-case" [ngClass]="{'active': property.occupiedStats === 'active',
+                                    'occupied': property.occupiedStats === 'occupied',
+                                    'vacant': property.occupiedStats === 'vacant', 
+                                    'inactive': property.occupiedStats === 'inactive'}">
+                        {{property.occupiedStats}}
+                    </td>
+                    <td class="capitalize">{{property.plan}}</td>
+                    <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        (click)="callDialog(property.owner,property.ownerStatus)">
+                        {{property.owner}}
+                    </td>
+                    <td class="upper-case">{{property.ownerStatus}}</td>
+                    <ng-container *ngIf="property.tenant">
+                        <td class="display-dialog" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                            (click)="callDialog(property.tenant.firstName, property.tenant.tenantStatus)">
+                            {{property.tenant.firstName}} {{property.tenant.lastName}}
+                        </td>
+                        <td class="upper-case">{{property.tenant.tenantStatus}}</td>
+                    </ng-container>
+                </tr>
+            </tbody>
+
+        </table>
+    </section>
+</main>
+<div class="paginator-controls">
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+</div>
+<!-- Dialog -->
+<app-modal [visibility]="showDialog" 
+           [listInfo]="listInfo" 
+           [listStatus]="listStatus">
+</app-modal>
