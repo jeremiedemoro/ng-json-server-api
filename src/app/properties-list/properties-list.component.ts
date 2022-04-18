@@ -37,7 +37,7 @@ export class PropertiesListComponent implements OnInit {
             this.isDataLoaded = true;
             this.properties = response;
             this.selectedStatus = this.properties;
-          }, 0);
+          }, 3000);
 
         }
       )
